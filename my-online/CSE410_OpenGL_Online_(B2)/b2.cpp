@@ -25,191 +25,108 @@ GLfloat bladeSpeed = 2.0f;       // Speed of blade rotation
 GLfloat MOVE_SPEED = 0.5f;
 GLfloat ROTATION_SPEED = 2.0f * M_PI / 180.0f;
 
-// Function to draw coordinate axes
+// Function to draw coordinate axes (white)
 void drawAxes() {
-    glLineWidth(3);
+    glLineWidth(2);
+    glColor3f(1, 1, 1); // White
     glBegin(GL_LINES);
-    
-    // X axis (red)
-    glColor3f(1, 0, 0);
+    // X axis
     glVertex3f(0, 0, 0);
     glVertex3f(3, 0, 0);
-    
-    // Y axis (green)
-    glColor3f(0, 1, 0);
+    // Y axis
     glVertex3f(0, 0, 0);
     glVertex3f(0, 3, 0);
-    
-    // Z axis (blue)
-    glColor3f(0, 0, 1);
+    // Z axis
     glVertex3f(0, 0, 0);
     glVertex3f(0, 0, 3);
-    
     glEnd();
 }
 
-// Function to draw fan body (cuboid with 8 faces)
+// Function to draw fan body as octagonal prism
 void drawFanBody() {
-    glPushMatrix();
-    
-    // Set dark grey color for fan body
-    glColor3f(0.2f, 0.2f, 0.2f);
-    
-    // Scale to make it look like a proper fan body
-    glScalef(0.8f, 0.4f, 0.6f);
-    
-    // Draw the rectangular faces of the cuboid
-    glBegin(GL_QUADS);
-    
-    // Front face
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-    
-    // Back face
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    
-    // Top face
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-    
-    // Bottom face
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    
-    // Right face
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    
-    // Left face
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-    
-    glEnd();
-    glPopMatrix();
+    float R = 1.5f; // Radius of octagon
+    float H = 1.0f; // Height
+    for (int i = 0; i < 8; i++) {
+        float theta1 = i * M_PI / 4.0f;
+        float theta2 = (i + 1) * M_PI / 4.0f;
+        // Alternate colors: yellow and cyan
+        if (i % 2 == 0)
+            glColor3f(1.0f, 1.0f, 0.0f); // Yellow
+        else
+            glColor3f(0.0f, 1.0f, 1.0f); // Cyan
+        glBegin(GL_QUADS);
+        glVertex3f(R * cos(theta1), -H, R * sin(theta1));
+        glVertex3f(R * cos(theta2), -H, R * sin(theta2));
+        glVertex3f(R * cos(theta2), H, R * sin(theta2));
+        glVertex3f(R * cos(theta1), H, R * sin(theta1));
+        glEnd();
+    }
 }
 
-// Function to draw rod (cylindrical approximation using 8 faces)
+// Function to draw rod as octagonal prism
 void drawRod() {
-    glPushMatrix();
-    
-    // Set silver color for rod
-    glColor3f(0.75f, 0.75f, 0.75f);
-    
-    // Scale to make it look like a thin rod
-    glScalef(0.1f, 0.6f, 0.1f);
-    
-    // Draw 8 faces to approximate a cylinder
-    glBegin(GL_QUAD_STRIP);
-    for(int i = 0; i <= 8; i++) {
-        float angle = (i % 8) * 2.0f * M_PI / 8;
-        float x = cos(angle);
-        float z = sin(angle);
-        
-        glVertex3f(x, 1.0f, z);
-        glVertex3f(x, -1.0f, z);
+    float r = 0.15f; // Rod radius
+    float h = 1.0f;  // Rod height
+    // Draw 8 faces
+    glColor3f(1.0f, 1.0f, 0.7f); // Light yellowish
+    for (int i = 0; i < 8; i++) {
+        float theta1 = i * M_PI / 4.0f;
+        float theta2 = (i + 1) * M_PI / 4.0f;
+        glBegin(GL_QUADS);
+        glVertex3f(r * cos(theta1), h, r * sin(theta1));
+        glVertex3f(r * cos(theta2), h, r * sin(theta2));
+        glVertex3f(r * cos(theta2), -h, r * sin(theta2));
+        glVertex3f(r * cos(theta1), -h, r * sin(theta1));
+        glEnd();
     }
-    glEnd();
-    
-    // Draw top and bottom faces
-    glBegin(GL_POLYGON);
-    for(int i = 0; i < 8; i++) {
-        float angle = i * 2.0f * M_PI / 8;
-        glVertex3f(cos(angle), 1.0f, sin(angle));
-    }
-    glEnd();
-    
-    glBegin(GL_POLYGON);
-    for(int i = 0; i < 8; i++) {
-        float angle = i * 2.0f * M_PI / 8;
-        glVertex3f(cos(angle), -1.0f, sin(angle));
-    }
-    glEnd();
-    
-    glPopMatrix();
 }
 
-// Function to draw a single blade
+// Function to draw a single blade (magenta, flat)
 void drawBlade() {
-    glPushMatrix();
-    
-    // Set light grey color for blades
-    glColor3f(0.8f, 0.8f, 0.8f);
-    
-    // Scale and position the blade
-    glScalef(0.15f, 1.0f, 0.4f);
-    
-    // Draw blade as a rectangle
+    glColor3f(1.0f, 0.0f, 1.0f); // Magenta
     glBegin(GL_QUADS);
-    // Front face
-    glVertex3f(-1.0f, 0.0f, 1.0f);
-    glVertex3f(1.0f, 0.0f, 1.0f);
-    glVertex3f(1.0f, 2.0f, 1.0f);
-    glVertex3f(-1.0f, 2.0f, 1.0f);
-    
-    // Back face
-    glVertex3f(-1.0f, 0.0f, -1.0f);
-    glVertex3f(-1.0f, 2.0f, -1.0f);
-    glVertex3f(1.0f, 2.0f, -1.0f);
-    glVertex3f(1.0f, 0.0f, -1.0f);
-    
-    // Top face
-    glVertex3f(-1.0f, 2.0f, -1.0f);
-    glVertex3f(-1.0f, 2.0f, 1.0f);
-    glVertex3f(1.0f, 2.0f, 1.0f);
-    glVertex3f(1.0f, 2.0f, -1.0f);
-    
-    // Bottom face
-    glVertex3f(-1.0f, 0.0f, -1.0f);
-    glVertex3f(1.0f, 0.0f, -1.0f);
-    glVertex3f(1.0f, 0.0f, 1.0f);
-    glVertex3f(-1.0f, 0.0f, 1.0f);
+    // Draw blade in X-Z plane (spread horizontally)
+    glVertex3f(0.0f, 0.0f, -0.4f);  // Bottom-left
+    glVertex3f(0.0f, 0.0f, 0.4f);   // Bottom-right
+    glVertex3f(5.0f, 0.0f, 0.4f);   // Top-right
+    glVertex3f(5.0f, 0.0f, -0.4f);  // Top-left
     glEnd();
+}
+
+// Timer function for blade animation
+void update(int value) {
+    bladeRotation += bladeSpeed;
+    if (bladeRotation > 360.0f) {
+        bladeRotation -= 360.0f;
+    }
     
-    glPopMatrix();
+    glutPostRedisplay();
+    glutTimerFunc(16, update, 0);  // 16ms = ~60fps
 }
 
 // Function to draw the complete fan
 void drawFan() {
     glPushMatrix();
-    
     // Apply overall fan rotation
-    glRotatef(fanRotation, 0.0f, 1.0f, 0.0f);
-    
-    // Draw fan body
+    glRotatef(fanRotation, 1.0f, 0.0f, 0.0f);
+    // Draw fan body (octagonal prism)
     drawFanBody();
-    
-    // Position and draw rod
-    glTranslatef(0.0f, 0.0f, 0.8f);
+    // Draw rod (octagonal prism)
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, 0.0f);
     drawRod();
-    
-    // Position and rotate blades
-    static float lastTime = 0;
-    float currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-    bladeRotation += bladeSpeed * (currentTime - lastTime);
-    lastTime = currentTime;
-    
-    glRotatef(bladeRotation, 0.0f, 0.0f, 1.0f);
-    
-    // Draw three blades at 120 degrees apart
-    drawBlade();
-    glRotatef(120.0f, 0.0f, 0.0f, 1.0f);
-    drawBlade();
-    glRotatef(120.0f, 0.0f, 0.0f, 1.0f);
-    drawBlade();
-    
+    glPopMatrix();
+    // Draw blades (magenta, 3 at 120 deg apart)
+    glPushMatrix();
+    glTranslatef(0.0f, 1.0f, 0.0f); // Move to top of rod
+    glRotatef(bladeRotation, 0.0f, 1.0f, 0.0f); // Rotate around Y-axis for spinning
+    for (int i = 0; i < 3; i++) {
+        glPushMatrix();
+        glRotatef(i * 120.0f, 0.0f, 1.0f, 0.0f); // Spread blades 120° apart around Y-axis
+        drawBlade();
+        glPopMatrix();
+    }
+    glPopMatrix();
     glPopMatrix();
 }
 
@@ -278,6 +195,7 @@ int main(int argc, char **argv) {
     glutDisplayFunc(display);
     glutReshapeFunc(reshapeListener);
     glutKeyboardFunc(keyboardListener);
+    glutTimerFunc(0, update, 0);  // Start the timer
     
     initGL();
     glutMainLoop();
