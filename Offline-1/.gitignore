@@ -1,0 +1,8 @@
+# Visual Studio Code settings
+.vscode/
+# Compiled files
+*.exe
+*.out
+*.o
+# Temporary files
+*.tmp
