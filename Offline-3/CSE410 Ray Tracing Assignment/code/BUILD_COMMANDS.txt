@@ -1,0 +1,2 @@
+g++ -o raytracer.exe 2005062_main.cpp intersection_implementations.cpp stb_image_impl.cpp -lfreeglut -lopengl32 -lglu32
+raytracer.exe
