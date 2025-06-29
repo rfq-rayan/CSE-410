@@ -103,11 +103,14 @@ double clamp(double value, double min_val, double max_val) {
     return value;
 }
 
+// Global variable for scene file
+string sceneFile = "scene.txt"; // Default scene file
+
 // Load scene data
 void loadData() {
-    ifstream file("scene.txt");
+    ifstream file(sceneFile);
     if (!file.is_open()) {
-        cout << "Error: Cannot open scene.txt" << endl;
+        cout << "Error: Cannot open " << sceneFile << endl;
         return;
     }
     
@@ -464,6 +467,14 @@ void init() {
 }
 
 int main(int argc, char** argv) {
+    // Check for command line argument for scene file
+    if (argc > 1) {
+        sceneFile = argv[1];
+        cout << "Using scene file: " << sceneFile << endl;
+    } else {
+        cout << "Using default scene file: " << sceneFile << endl;
+    }
+    
     glutInit(&argc, argv);
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(0, 0);
